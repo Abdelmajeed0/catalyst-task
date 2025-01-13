@@ -13,7 +13,19 @@ export default function PropertyDetails() {
   const selectedProp = data.find((item) => item.id === Number(id));
 
   const baseUrl = "https://test.catalystegy.com/";
-  const images = selectedProp?.images ? JSON.parse(selectedProp.images) : [];
+  let images = [];
+  if (selectedProp?.images) {
+    try {
+      images = JSON.parse(selectedProp.images);
+    } catch (error) {
+      console.error(
+        "Failed to parse selectedProp images JSON:",
+        error,
+        selectedProp?.images
+      );
+      images = []; // Fallback to an empty array
+    }
+  }
 
   const handleViewClick = () => {
     setViewModalOpen(true);

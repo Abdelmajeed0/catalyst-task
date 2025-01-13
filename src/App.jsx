@@ -1,17 +1,13 @@
 import { Suspense, lazy } from "react";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// import RootLayout from "./pages/RootLayout";
-// import Home from "./pages/Home";
-// import AdminPage from "./pages/AdminPage";
-// import ErrorPage from "./pages/ErrorPage";
-// import PropertyDetails from "./pages/PropertyDetails";
 
 const RootLayout = lazy(() => import("./pages/RootLayout"));
 const Home = lazy(() => import("./pages/Home"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
 const PropertyDetails = lazy(() => import("./pages/PropertyDetails"));
+const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage"));
 import Spinner from "./components/Spinner";
 
 const router = createBrowserRouter([
@@ -27,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/admin",
         element: <AdminPage />,
+      },
+      {
+        path: "/admin-login",
+        element: <AdminLoginPage />,
       },
       {
         path: "/:id",

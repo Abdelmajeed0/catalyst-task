@@ -12,7 +12,25 @@ export default function PropertyCard() {
   return (
     <div className="grid grid-cols-4 gap-6 place-items-center lg:px-6 lg:py-6  max-md:grid-cols-1">
       {data.map((prop) => {
-        const images = prop?.images ? JSON.parse(prop.images) : [];
+        // console.log("Property:", prop);
+
+        // const images = (() => {
+        //   try {
+        //     return prop?.images ? JSON.parse(prop.images) : [];
+        //   } catch (error) {
+        //     console.error("Failed to parse images JSON:", error, prop?.images);
+        //     return []; // Return an empty array if parsing fails
+        //   }
+        // })();
+        let images = [];
+        if (prop?.images) {
+          try {
+            images = JSON.parse(prop.images);
+          } catch (error) {
+            // console.error("Failed to parse images JSON:", error, prop?.images);
+            images = [];
+          }
+        }
 
         return (
           <div className="mb-8" key={prop.id}>

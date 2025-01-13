@@ -66,7 +66,7 @@ export default function DataProvider({ children }) {
   }, [loading, page, data.length, allData]);
 
   return (
-    <DataContext.Provider value={{ data, loading, error, setData }}>
+    <DataContext.Provider value={{ data, loading, error, setData, allData }}>
       {children}
     </DataContext.Provider>
   );
