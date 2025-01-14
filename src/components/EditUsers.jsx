@@ -17,7 +17,7 @@ export default function EditUsers({ open, onClose, item }) {
         name: item.name || "",
         email: item.email || "",
         phone: item.phone || "",
-        profile_image: null,
+        // profile_image: [],
         role: item.role || "client", // Default role
       });
     }
