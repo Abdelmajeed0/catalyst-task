@@ -108,7 +108,7 @@ export default function CreateNewProperty({ isOpen, onClose }) {
               htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              Name
+              Property Name
             </label>
             <input
               type="text"
@@ -124,13 +124,14 @@ export default function CreateNewProperty({ isOpen, onClose }) {
               htmlFor="description"
               className="block text-sm font-medium text-gray-700"
             >
-              Description
+              Property Description
             </label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              rows={5}
               required
             />
           </div>
@@ -139,7 +140,7 @@ export default function CreateNewProperty({ isOpen, onClose }) {
               htmlFor="price"
               className="block text-sm font-medium text-gray-700"
             >
-              Price
+              Property Price
             </label>
             <input
               type="number"
@@ -155,7 +156,7 @@ export default function CreateNewProperty({ isOpen, onClose }) {
               htmlFor="location"
               className="block text-sm font-medium text-gray-700"
             >
-              Location
+              Property Location
             </label>
             <input
               type="text"
@@ -187,7 +188,7 @@ export default function CreateNewProperty({ isOpen, onClose }) {
               htmlFor="images"
               className="block text-sm font-medium text-gray-700"
             >
-              Images
+              Property Images
             </label>
             <input
               type="file"

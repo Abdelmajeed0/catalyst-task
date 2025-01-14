@@ -19,7 +19,6 @@ export default function AdminPropTable() {
   const [viewType, setViewType] = useState("");
 
   const baseUrl = "https://test.catalystegy.com/";
-  const oldUrl = "https://bio3.catalyst.com.eg/public/Catalyst_portfolio/";
 
   const handleViewClick = (property, type) => {
     setSelectedProperty(property);
@@ -167,27 +166,22 @@ export default function AdminPropTable() {
               {viewType === "images" ? (
                 <div className="h-56 sm:h-64 xl:h-80 2xl:h-96">
                   <Carousel slide={false}>
-                    {selectedProperty.images &&
-                    Array.isArray(selectedProperty.images) ? (
-                      selectedProperty.images.map((image, index) => (
+                    {(selectedProperty.images &&
+                      (Array.isArray(selectedProperty.images)
+                        ? selectedProperty.images
+                        : JSON.parse(selectedProperty.images)
+                      ).map((image, index) => (
                         <div
                           key={index}
                           className="flex h-full items-center justify-center bg-gray-400 dark:bg-gray-700 dark:text-white"
                         >
                           <LazyLoadImage
-                            src={
-                              image.trim().startsWith(oldUrl)
-                                ? image
-                                : baseUrl + image
-                            }
+                            src={`${baseUrl}${image.replace(/^\\/, "/")}`}
                             alt={`Slide ${index + 1}`}
                             className="h-full w-full object-cover"
                           />
                         </div>
-                      ))
-                    ) : (
-                      <p>No images available</p>
-                    )}
+                      ))) || <p>No images available</p>}
                   </Carousel>
                 </div>
               ) : (

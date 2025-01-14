@@ -7,7 +7,8 @@ const Home = lazy(() => import("./pages/Home"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
 const PropertyDetails = lazy(() => import("./pages/PropertyDetails"));
-const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage"));
+const Login = lazy(() => import("./pages/Login"));
+const UserProfile = lazy(() => import("./pages/UserProfile"));
 import Spinner from "./components/Spinner";
 
 const router = createBrowserRouter([
@@ -25,8 +26,12 @@ const router = createBrowserRouter([
         element: <AdminPage />,
       },
       {
-        path: "/admin",
-        element: <AdminLoginPage />,
+        path: "/profile/:id",
+        element: <UserProfile />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
       },
       {
         path: "/:id",

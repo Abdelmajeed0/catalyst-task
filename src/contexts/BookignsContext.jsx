@@ -1,23 +1,23 @@
 import { createContext, useState, useEffect } from "react";
 
-const AppartmentContext = createContext();
+const BookingContext = createContext();
 
 // eslint-disable-next-line react/prop-types
-export default function AppartmentProvider({ children }) {
-  const [allData, setAllData] = useState([]);
-  const [data, setData] = useState([]);
+export default function BookingProvider({ children }) {
+  const [allBookings, setAllBookings] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchBookings = async () => {
       setLoading(true);
       setError("");
 
       try {
-        const res = await fetch("https://test.catalystegy.com/api/properties");
+        const res = await fetch("https://test.catalystegy.com/api/bookings");
 
         if (!res.ok) {
           const errorMessage = `HTTP Error: ${res.status} ${res.statusText}`;
@@ -27,18 +27,18 @@ export default function AppartmentProvider({ children }) {
           return;
         }
 
-        const fullData = await res.json();
-        setAllData(fullData);
-        setData(fullData.slice(0, itemsPerPage));
+        const fullBookings = await res.json();
+        setAllBookings(fullBookings);
+        setBookings(fullBookings.slice(0, itemsPerPage));
         setLoading(false);
       } catch (err) {
-        console.error("Error Fetching Data:", err);
+        console.error("Error Fetching Bookings:", err);
         setError(`Network Error: ${err.message}`);
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchBookings();
   }, []);
 
   // Load more data as the user scrolls
@@ -48,28 +48,31 @@ export default function AppartmentProvider({ children }) {
         window.innerHeight + document.documentElement.scrollTop >=
           document.documentElement.offsetHeight - 100 &&
         !loading &&
-        data.length < allData.length
+        bookings.length < allBookings.length
       ) {
         const nextPage = page + 1;
         const start = (nextPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
 
-        setData((prevData) => [...prevData, ...allData.slice(start, end)]);
+        setBookings((prevBookings) => [
+          ...prevBookings,
+          ...allBookings.slice(start, end),
+        ]);
         setPage(nextPage);
       }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, page, data.length, allData]);
+  }, [loading, page, bookings.length, allBookings]);
 
   return (
-    <AppartmentContext.Provider
-      value={{ data, loading, error, setData, allData }}
+    <BookingContext.Provider
+      value={{ bookings, loading, error, setBookings, allBookings }}
     >
       {children}
-    </AppartmentContext.Provider>
+    </BookingContext.Provider>
   );
 }
 
-export { AppartmentContext };
+export { BookingContext };

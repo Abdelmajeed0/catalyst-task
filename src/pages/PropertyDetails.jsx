@@ -1,12 +1,15 @@
 import { useContext, useState } from "react";
 import { AppartmentContext } from "../contexts/AppartmentContext";
 import { Button, Carousel, Modal } from "flowbite-react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import BookNowModal from "../components/BookNowModal";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 export default function PropertyDetails() {
   const { data } = useContext(AppartmentContext);
+  const navigate = useNavigate();
   const { id } = useParams();
+  const exsitingId = data.find((prop) => prop.id === Number(id));
+
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [bookNowModalOpen, setBookNowModalOpen] = useState(false);
 
@@ -54,6 +57,11 @@ export default function PropertyDetails() {
       alert("Location not available");
     }
   };
+
+  if (!exsitingId) {
+    navigate("/");
+    return;
+  }
 
   return (
     <>

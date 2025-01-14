@@ -1,35 +1,13 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal, Button } from "flowbite-react";
 
 export default function EditUsers({ open, onClose, item }) {
   const [formData, setFormData] = useState({
-    name: item?.name || "", // Safe access for item
-    email: item?.email || "",
-    phone: item?.phone || "",
     profile_image: null,
     // intro_video: null,
-    role: item?.role || "client", // Default role
   });
-  useEffect(() => {
-    if (item) {
-      setFormData({
-        name: item.name || "",
-        email: item.email || "",
-        phone: item.phone || "",
-        // profile_image: [],
-        role: item.role || "client", // Default role
-      });
-    }
-  }, [item]);
-  // Handle input field changes
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [id]: value,
-    }));
-  };
+
   // Handle file input change (for profile image)
   const handleFileChange = (e) => {
     const { files } = e.target;
@@ -42,7 +20,6 @@ export default function EditUsers({ open, onClose, item }) {
   };
   // const handleVideoChange = (e) => {
   //   const { files } = e.target;
-  //   console.log(files);
 
   //   if (files && files[0]) {
   //     setFormData((prevData) => ({
@@ -68,10 +45,8 @@ export default function EditUsers({ open, onClose, item }) {
     // Object.keys(formData).forEach((key) => {
     //   if (key === "intro_video" && formData[key]) {
     //     updatedData.append(key, formData[key]);
-    //     console.log(formData[key]);
     //   } else {
     //     updatedData.append(key, formData[key]);
-    //     console.log(formData[key]);
     //   }
     // });
 
@@ -106,54 +81,6 @@ export default function EditUsers({ open, onClose, item }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={formData.name || ""}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={formData.email || ""}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Phone
-            </label>
-            <input
-              type="text"
-              id="phone"
-              value={formData.phone || ""}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-
-          <div>
-            <label
               htmlFor="profile_image"
               className="block text-sm font-medium text-gray-700"
             >
@@ -183,25 +110,6 @@ export default function EditUsers({ open, onClose, item }) {
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div> */}
-
-          <div>
-            <label
-              htmlFor="role"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Role
-            </label>
-            <select
-              id="role"
-              value={formData.role || "client"}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-              <option value="admin">Admin</option>
-              <option value="owner">Owner</option>
-              <option value="client">Client</option>
-            </select>
-          </div>
         </form>
       </Modal.Body>
 

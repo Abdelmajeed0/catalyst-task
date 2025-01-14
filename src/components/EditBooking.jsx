@@ -2,26 +2,29 @@
 import { useState, useEffect } from "react";
 import { Modal, Button } from "flowbite-react";
 
-export default function EditUsers({ open, onClose, item }) {
+export default function EditBooking({ open, onClose, booking }) {
   const [formData, setFormData] = useState({
-    name: item?.name || "", // Safe access for item
-    email: item?.email || "",
-    phone: item?.phone || "",
-    profile_image: null,
-    // intro_video: null,
-    role: item?.role || "client", // Default role
+    propertyName: booking?.property?.name || "", // Safe access for booking and property
+    clientName: booking?.user?.name || "",
+    startDate: booking?.start_date || "",
+    endDate: booking?.end_date || "",
+    price: booking?.property?.price || "",
+    status: booking?.status || "pending", // Default status
   });
+
   useEffect(() => {
-    if (item) {
+    if (booking) {
       setFormData({
-        name: item.name || "",
-        email: item.email || "",
-        phone: item.phone || "",
-        // profile_image: [],
-        role: item.role || "client", // Default role
+        propertyName: booking.property?.name || "",
+        clientName: booking.user?.name || "",
+        startDate: booking.start_date || "",
+        endDate: booking.end_date || "",
+        price: booking.property?.price || "",
+        status: booking.status || "pending",
       });
     }
-  }, [item]);
+  }, [booking]);
+
   // Handle input field changes
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -30,91 +33,58 @@ export default function EditUsers({ open, onClose, item }) {
       [id]: value,
     }));
   };
-  // Handle file input change (for profile image)
-  const handleFileChange = (e) => {
-    const { files } = e.target;
-    if (files && files[0]) {
-      setFormData((prevData) => ({
-        ...prevData,
-        profile_image: files[0], // Set the file selected by the user
-      }));
-    }
-  };
-  // const handleVideoChange = (e) => {
-  //   const { files } = e.target;
-  //   console.log(files);
-
-  //   if (files && files[0]) {
-  //     setFormData((prevData) => ({
-  //       ...prevData,
-  //       intro_video: files[0], // Set the file selected by the user
-  //     }));
-  //   }
-  // };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const updatedData = new FormData();
-    // Append each field, including the file
-    Object.keys(formData).forEach((key) => {
-      if (key === "profile_image" && formData[key]) {
-        updatedData.append(key, formData[key]);
-      } else {
-        updatedData.append(key, formData[key]);
-      }
-    });
-    // Object.keys(formData).forEach((key) => {
-    //   if (key === "intro_video" && formData[key]) {
-    //     updatedData.append(key, formData[key]);
-    //     console.log(formData[key]);
-    //   } else {
-    //     updatedData.append(key, formData[key]);
-    //     console.log(formData[key]);
-    //   }
-    // });
+    const updatedData = {
+      ...formData,
+      start_date: formData.startDate,
+      end_date: formData.endDate,
+    };
 
     try {
       const response = await fetch(
-        `https://test.catalystegy.com/api/users/${item.id}`,
+        `https://test.catalystegy.com/api/bookings/${booking.id}`,
         {
-          method: "POST",
-          body: updatedData,
+          method: "PUT", // Using PUT for updating
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedData),
         }
       );
 
       if (response.ok) {
-        alert("User updated successfully!");
+        alert("Booking updated successfully!");
         onClose(); // Close the modal after success
-        location.reload(); // refresh the page after the prop being updated
+        location.reload(); // Refresh the page after the update
       } else {
-        alert("Failed to update user.");
+        alert("Failed to update booking.");
       }
-      const updatedUser = await response.json();
-      console.log(updatedUser);
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error("Error updating booking:", error);
       alert("An error occurred.");
     }
   };
 
   return (
     <Modal show={open} className="bg-white" size="md" onClose={onClose}>
-      <Modal.Header>Edit User</Modal.Header>
+      <Modal.Header>Edit Booking</Modal.Header>
       <Modal.Body>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
-              htmlFor="name"
+              htmlFor="propertyName"
               className="block text-sm font-medium text-gray-700"
             >
-              Name
+              Property Name
             </label>
             <input
               type="text"
-              id="name"
-              value={formData.name || ""}
+              id="propertyName"
+              value={formData.propertyName || ""}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
@@ -122,31 +92,15 @@ export default function EditUsers({ open, onClose, item }) {
 
           <div>
             <label
-              htmlFor="email"
+              htmlFor="clientName"
               className="block text-sm font-medium text-gray-700"
             >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={formData.email || ""}
-              onChange={handleChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Phone
+              Client Name
             </label>
             <input
               type="text"
-              id="phone"
-              value={formData.phone || ""}
+              id="clientName"
+              value={formData.clientName || ""}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
@@ -154,52 +108,68 @@ export default function EditUsers({ open, onClose, item }) {
 
           <div>
             <label
-              htmlFor="profile_image"
+              htmlFor="startDate"
               className="block text-sm font-medium text-gray-700"
             >
-              Profile Image URL
+              Start Date
             </label>
             <input
-              type="file"
-              id="profile_image"
-              name="profile_image"
-              onChange={handleFileChange}
+              type="date"
+              id="startDate"
+              value={formData.startDate || ""}
+              onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
 
-          {/* <div>
+          <div>
             <label
-              htmlFor="intro_video"
+              htmlFor="endDate"
               className="block text-sm font-medium text-gray-700"
             >
-              Intro Video URL
+              End Date
             </label>
             <input
-              name="intro_video"
-              type="file"
-              id="intro_video"
-              onChange={handleVideoChange}
+              type="date"
+              id="endDate"
+              value={formData.endDate || ""}
+              onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
-          </div> */}
+          </div>
 
           <div>
             <label
-              htmlFor="role"
+              htmlFor="price"
               className="block text-sm font-medium text-gray-700"
             >
-              Role
+              Price
+            </label>
+            <input
+              type="number"
+              id="price"
+              value={formData.price || ""}
+              onChange={handleChange}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="status"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Status
             </label>
             <select
-              id="role"
-              value={formData.role || "client"}
+              id="status"
+              value={formData.status || "pending"}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
-              <option value="admin">Admin</option>
-              <option value="owner">Owner</option>
-              <option value="client">Client</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="canceled">Canceled</option>
             </select>
           </div>
         </form>

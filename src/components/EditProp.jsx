@@ -34,8 +34,6 @@ export default function EditProp({ open, onClose, property }) {
     }));
   };
 
-  console.log(property);
-
   const handleFileChange = (e, key) => {
     const files = Array.from(e.target.files);
     setFormData((prevData) => ({
@@ -54,18 +52,53 @@ export default function EditProp({ open, onClose, property }) {
     updatedData.append("location", formData.location);
 
     // Append old images (if they exist)
-    if (property.images && property.images.length > 0) {
-      property.images.forEach((image) => {
-        updatedData.append("existing_images[]", image);
-      });
+    if (property.images) {
+      let existingImages;
+
+      // Check if images are JSON and parse them
+      if (typeof property.images === "string") {
+        try {
+          existingImages = JSON.parse(property.images);
+        } catch (error) {
+          console.error("Error parsing property.images:", error);
+          existingImages = []; // Default to an empty array if parsing fails
+        }
+      } else {
+        existingImages = property.images;
+      }
+
+      // Append old images
+      if (Array.isArray(existingImages)) {
+        existingImages.forEach((image) => {
+          updatedData.append("existing_images[]", image);
+        });
+      }
     }
 
-    // Append new images
-    if (formData.images && formData.images.length > 0) {
-      formData.images.forEach((image, index) => {
-        updatedData.append(`images[${index}]`, image);
-      });
+    // Append new images (if they exist)
+    if (formData.images) {
+      let newImages;
+
+      // Check if images are JSON and parse them
+      if (typeof formData.images === "string") {
+        try {
+          newImages = JSON.parse(formData.images);
+        } catch (error) {
+          console.error("Error parsing formData.images:", error);
+          newImages = []; // Default to an empty array if parsing fails
+        }
+      } else {
+        newImages = formData.images;
+      }
+
+      // Append new images
+      if (Array.isArray(newImages)) {
+        newImages.forEach((image, index) => {
+          updatedData.append(`images[${index}]`, image);
+        });
+      }
     }
+
     try {
       setLoading(true);
       const response = await fetch(
@@ -124,6 +157,7 @@ export default function EditProp({ open, onClose, property }) {
               value={formData.description}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              rows={5}
               required
             />
           </div>
