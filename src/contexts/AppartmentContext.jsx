@@ -64,7 +64,7 @@ export default function AppartmentProvider({ children }) {
   }, [loading, page, data.length, allData]);
 
   return (
-    <AppartmentContext.Provider value={{ data, loading, error }}>
+    <AppartmentContext.Provider value={{ data, loading, error, setData }}>
       {children}
     </AppartmentContext.Provider>
   );

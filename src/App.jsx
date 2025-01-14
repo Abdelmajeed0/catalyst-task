@@ -21,11 +21,11 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/admin",
+        path: "/admin/:id",
         element: <AdminPage />,
       },
       {
-        path: "/admin-login",
+        path: "/admin",
         element: <AdminLoginPage />,
       },
       {

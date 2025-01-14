@@ -2,27 +2,30 @@
 import { useState, useEffect } from "react";
 import { Modal, Button } from "flowbite-react";
 
-export default function EditUsers({ open, onClose, item }) {
+export default function EditProp({ open, onClose, property }) {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: item?.name || "", // Safe access for item
-    email: item?.email || "",
-    phone: item?.phone || "",
-    profile_image: null,
-    // intro_video: null,
-    role: item?.role || "client", // Default role
+    name: property?.name || "",
+    description: property?.description || "",
+    price: property?.price || "",
+    location: property?.location || "",
+    // videos: [],
+    images: null,
   });
+
   useEffect(() => {
-    if (item) {
+    if (property) {
       setFormData({
-        name: item.name || "",
-        email: item.email || "",
-        phone: item.phone || "",
-        profile_image: null,
-        role: item.role || "client", // Default role
+        name: property.name || "",
+        description: property.description || "",
+        price: property.price || "",
+        location: property.location || "",
+        // videos: [],
+        // images: null,
       });
     }
-  }, [item]);
-  // Handle input field changes
+  }, [property]);
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -30,56 +33,43 @@ export default function EditUsers({ open, onClose, item }) {
       [id]: value,
     }));
   };
-  // Handle file input change (for profile image)
-  const handleFileChange = (e) => {
-    const { files } = e.target;
-    console.log(files);
 
-    if (files && files[0]) {
-      setFormData((prevData) => ({
-        ...prevData,
-        profile_image: files[0], // Set the file selected by the user
-      }));
-    }
+  console.log(property);
+
+  const handleFileChange = (e, key) => {
+    const files = Array.from(e.target.files);
+    setFormData((prevData) => ({
+      ...prevData,
+      [key]: files,
+    }));
   };
-  // const handleVideoChange = (e) => {
-  //   const { files } = e.target;
-  //   console.log(files);
 
-  //   if (files && files[0]) {
-  //     setFormData((prevData) => ({
-  //       ...prevData,
-  //       intro_video: files[0], // Set the file selected by the user
-  //     }));
-  //   }
-  // };
-
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const updatedData = new FormData();
-    // Append each field, including the file
-    Object.keys(formData).forEach((key) => {
-      if (key === "profile_image" && formData[key]) {
-        updatedData.append(key, formData[key]);
-      } else {
-        updatedData.append(key, formData[key]);
-      }
-    });
-    // Object.keys(formData).forEach((key) => {
-    //   if (key === "intro_video" && formData[key]) {
-    //     updatedData.append(key, formData[key]);
-    //     console.log(formData[key]);
-    //   } else {
-    //     updatedData.append(key, formData[key]);
-    //     console.log(formData[key]);
-    //   }
-    // });
+    updatedData.append("name", formData.name);
+    updatedData.append("description", formData.description);
+    updatedData.append("price", formData.price);
+    updatedData.append("location", formData.location);
 
+    // Append old images (if they exist)
+    if (property.images && property.images.length > 0) {
+      property.images.forEach((image) => {
+        updatedData.append("existing_images[]", image);
+      });
+    }
+
+    // Append new images
+    if (formData.images && formData.images.length > 0) {
+      formData.images.forEach((image, index) => {
+        updatedData.append(`images[${index}]`, image);
+      });
+    }
     try {
+      setLoading(true);
       const response = await fetch(
-        `https://test.catalystegy.com/api/users/${item.id}`,
+        `https://test.catalystegy.com/api/properties/${property.id}`,
         {
           method: "POST",
           body: updatedData,
@@ -87,23 +77,23 @@ export default function EditUsers({ open, onClose, item }) {
       );
 
       if (response.ok) {
-        alert("User updated successfully!");
-        onClose(); // Close the modal after success
+        alert("Property updated successfully!");
+        onClose();
         location.reload(); // refresh the page after the prop being updated
       } else {
-        alert("Failed to update user.");
+        alert("Failed to update property.");
       }
-      const updatedUser = await response.json();
-      console.log(updatedUser);
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error("Error updating property:", error);
       alert("An error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Modal show={open} className="bg-white" size="md" onClose={onClose}>
-      <Modal.Header>Edit User</Modal.Header>
+      <Modal.Header>Edit Property</Modal.Header>
       <Modal.Body>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -116,100 +106,97 @@ export default function EditUsers({ open, onClose, item }) {
             <input
               type="text"
               id="name"
-              value={formData.name || ""}
+              value={formData.name}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              required
             />
           </div>
-
           <div>
             <label
-              htmlFor="email"
+              htmlFor="description"
               className="block text-sm font-medium text-gray-700"
             >
-              Email
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="price"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Price
             </label>
             <input
-              type="email"
-              id="email"
-              value={formData.email || ""}
+              type="number"
+              id="price"
+              value={formData.price}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              required
             />
           </div>
-
           <div>
             <label
-              htmlFor="phone"
+              htmlFor="location"
               className="block text-sm font-medium text-gray-700"
             >
-              Phone
+              Location
             </label>
             <input
               type="text"
-              id="phone"
-              value={formData.phone || ""}
+              id="location"
+              value={formData.location}
               onChange={handleChange}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              required
             />
           </div>
-
-          <div>
-            <label
-              htmlFor="profile_image"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Profile Image URL
-            </label>
-            <input
-              type="file"
-              id="profile_image"
-              name="profile_image"
-              onChange={handleFileChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-
           {/* <div>
             <label
-              htmlFor="intro_video"
+              htmlFor="videos"
               className="block text-sm font-medium text-gray-700"
             >
-              Intro Video URL
+              Videos
             </label>
             <input
-              name="intro_video"
               type="file"
-              id="intro_video"
-              onChange={handleVideoChange}
+              id="videos"
+              accept="video/*"
+              multiple
+              onChange={(e) => handleFileChange(e, "videos")}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
-          </div> */}
-
+          </div>
+         */}
           <div>
             <label
-              htmlFor="role"
+              htmlFor="images"
               className="block text-sm font-medium text-gray-700"
             >
-              Role
+              Images
             </label>
-            <select
-              id="role"
-              value={formData.role || "client"}
-              onChange={handleChange}
+            <input
+              type="file"
+              id="images"
+              accept="image/*"
+              multiple
+              onChange={(e) => handleFileChange(e, "images")}
               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-              <option value="admin">Admin</option>
-              <option value="owner">Owner</option>
-              <option value="client">Client</option>
-            </select>
+            />
           </div>
         </form>
       </Modal.Body>
-
       <Modal.Footer>
         <Button type="submit" onClick={handleSubmit}>
-          Save Changes
+          {loading ? "Saving..." : "Save Changes"}
         </Button>
         <Button color="gray" onClick={onClose}>
           Cancel
